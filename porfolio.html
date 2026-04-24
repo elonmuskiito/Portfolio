@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shreeyansh Rajput — AI Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       STYLES
+  ============================================================ -->
+  <style>
+
+    /* ── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --bg-void:       #020408;
+      --bg-deep:       #050d15;
+      --bg-panel:      rgba(5, 20, 35, 0.7);
+      --bg-card:       rgba(8, 25, 45, 0.6);
+
+      --neon-cyan:     #00f5ff;
+      --neon-green:    #00ff88;
+      --neon-purple:   #bf5fff;
+      --neon-orange:   #ff6b35;
+
+      --glow-cyan:     0 0 8px #00f5ff, 0 0 20px rgba(0,245,255,0.4), 0 0 40px rgba(0,245,255,0.15);
+      --glow-green:    0 0 8px #00ff88, 0 0 20px rgba(0,255,136,0.4), 0 0 40px rgba(0,255,136,0.15);
+      --glow-purple:   0 0 8px #bf5fff, 0 0 20px rgba(191,95,255,0.4);
+
+      --text-primary:  #e8f4f8;
+      --text-muted:    rgba(180, 210, 220, 0.55);
+      --text-dim:      rgba(100, 150, 170, 0.4);
+
+      --border-subtle: rgba(0, 245, 255, 0.12);
+      --border-glow:   rgba(0, 245, 255, 0.45);
+
+      --font-mono:     'Share Tech Mono', monospace;
+      --font-display:  'Orbitron', sans-serif;
+      --font-body:     'Rajdhani', sans-serif;
+
+      --transition:    0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --section-pad:   clamp(80px, 10vw, 140px) clamp(20px, 5vw, 80px);
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 245, 255, 0.012) 2px,
+        rgba(0, 245, 255, 0.012) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Scrollbar ─────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 3px; }
+
+    /* ── Selection ─────────────────────────────────────────────── */
+    ::selection { background: rgba(0, 245, 255, 0.25); color: var(--neon-cyan); }
+
+    /* ── Utility ───────────────────────────────────────────────── */
+    .neon-text-cyan  { color: var(--neon-cyan);   text-shadow: var(--glow-cyan); }
+    .neon-text-green { color: var(--neon-green);  text-shadow: var(--glow-green); }
+    .neon-text-purple{ color: var(--neon-purple); text-shadow: var(--glow-purple); }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 10px;
+    }
+
+    /* Scroll-reveal base state */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── NAVIGATION ────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 60px);
+      height: 64px;
+      background: rgba(2, 4, 8, 0.6);
+      backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(2, 4, 8, 0.92);
+      border-bottom-color: var(--border-glow);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--neon-cyan);
+      text-decoration: none;
+      text-shadow: var(--glow-cyan);
+    }
+    .nav-logo span { color: var(--neon-green); text-shadow: var(--glow-green); }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      position: relative;
+      transition: color var(--transition);
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--neon-cyan); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-toggle span {
+      width: 24px; height: 1.5px;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 5px var(--neon-cyan);
+      transition: var(--transition);
+      display: block;
+    }
+
+    /* ── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 80px clamp(20px, 5vw, 80px) 40px;
+    }
+
+    /* Animated gradient mesh */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 50%, rgba(0, 245, 255, 0.055) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 80% 30%, rgba(0, 255, 136, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 60% 80%, rgba(191, 95, 255, 0.04) 0%, transparent 65%),
+        var(--bg-deep);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+
+    /* Particle canvas */
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* Grid lines */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 245, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 255, 0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at center, black 40%, transparent 80%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+      text-align: left;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      color: var(--neon-green);
+      text-shadow: var(--glow-green);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeSlideDown 0.8s ease both;
+    }
+    .hero-eyebrow::before { content: '> '; opacity: 0.6; }
+
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
+      animation: fadeSlideDown 0.9s 0.1s ease both;
+    }
+    .hero-name .first { color: var(--text-primary); }
+    .hero-name .last  { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+
+    .hero-tagline {
+      font-family: var(--font-display);
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      color: var(--neon-green);
+      text-shadow: var(--glow-green);
+      margin-bottom: 28px;
+      text-transform: uppercase;
+      animation: fadeSlideDown 1s 0.2s ease both;
+    }
+
+    .hero-intro {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      font-weight: 300;
+      color: var(--text-muted);
+      max-width: 540px;
+      margin-bottom: 44px;
+      line-height: 1.8;
+      animation: fadeSlideDown 1.1s 0.3s ease both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      animation: fadeSlideDown 1.2s 0.4s ease both;
+    }
+
+    /* CTA Buttons */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-decoration: none;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      transition: var(--transition);
+      border-radius: 2px;
+    }
+
+    .btn-primary {
+      background: transparent;
+      color: var(--bg-void);
+      border: 1.5px solid var(--neon-cyan);
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--neon-cyan);
+      transform: scaleX(1);
+      transform-origin: left;
+      transition: transform var(--transition);
+      z-index: -1;
+    }
+    .btn-primary:hover {
+      color: var(--bg-void);
+      box-shadow: var(--glow-cyan), inset 0 0 20px rgba(0,245,255,0.2);
+      transform: translateY(-2px);
+    }
+    .btn-primary:hover::before { transform: scaleX(1.05); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--neon-green);
+      border: 1.5px solid rgba(0, 255, 136, 0.5);
+    }
+    .btn-secondary:hover {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      box-shadow: var(--glow-green);
+      transform: translateY(-2px);
+      background: rgba(0, 255, 136, 0.06);
+    }
+
+    /* Ripple effect */
+    .btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transform: scale(0);
+      animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      animation: fadeSlideDown 1.5s 1s ease both;
+    }
+    .scroll-hint-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, transparent, var(--neon-cyan));
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.5) translateY(-10px); }
+      50%       { opacity: 1;   transform: scaleY(1)   translateY(0); }
+    }
+
+    /* ── ABOUT ─────────────────────────────────────────────────── */
+    #about {
+      padding: var(--section-pad);
+      position: relative;
+    }
+
+    .about-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: 0.02em;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    .about-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 32px;
+    }
+    .stat-item { text-align: left; }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-shadow: var(--glow-cyan);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Skill cards */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .skill-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 22px 20px;
+      border-radius: 4px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+      overflow: hidden;
+      cursor: default;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px; height: 100%;
+      background: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      transform: scaleY(0);
+      transition: transform var(--transition);
+    }
+    .skill-card:hover {
+      border-color: var(--border-glow);
+      background: rgba(0, 245, 255, 0.06);
+      transform: translateX(4px);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.08);
+    }
+    .skill-card:hover::before { transform: scaleY(1); }
+
+    .skill-card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 6px var(--neon-cyan));
+    }
+    .skill-card-name {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+    }
+    .skill-card-desc {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      font-weight: 300;
+    }
+
+    /* ── PROJECTS ──────────────────────────────────────────────── */
+    #projects {
+      padding: var(--section-pad);
+      background: linear-gradient(180deg, transparent 0%, rgba(0,245,255,0.02) 50%, transparent 100%);
+    }
+
+    .section-header {
+      max-width: 1100px;
+      margin: 0 auto 60px;
+    }
+
+    .projects-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 36px 30px 28px;
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: default;
+    }
+
+    /* Glow corner */
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--card-accent, rgba(0,245,255,0.18)) 0%, transparent 70%);
+      transition: var(--transition);
+    }
+    .project-card:hover::before {
+      width: 200px; height: 200px;
+      top: -100px; right: -100px;
+    }
+
+    /* Corner accent lines */
+    .project-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border-top: 1.5px solid var(--neon-cyan);
+      border-left: 1.5px solid var(--neon-cyan);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .project-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border-glow);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0, 245, 255, 0.08);
+    }
+    .project-card:hover::after { opacity: 1; }
+
+    .project-number {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      padding: 4px 10px;
+      border-radius: 2px;
+      border: 1px solid;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .tag-cv   { color: var(--neon-cyan);   border-color: rgba(0,245,255,0.3);  background: rgba(0,245,255,0.06); }
+    .tag-ai   { color: var(--neon-purple); border-color: rgba(191,95,255,0.3); background: rgba(191,95,255,0.06); }
+    .tag-hw   { color: var(--neon-green);  border-color: rgba(0,255,136,0.3);  background: rgba(0,255,136,0.06); }
+
+    .project-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .project-title .highlight { color: var(--neon-cyan); }
+
+    .project-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .tech-chip {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      padding: 3px 8px;
+      border: 1px solid rgba(100, 150, 170, 0.2);
+      border-radius: 2px;
+    }
+
+    .project-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: 1px solid rgba(100, 150, 170, 0.25);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .btn-github svg { width: 14px; height: 14px; }
+    .btn-github:hover {
+      color: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0,245,255,0.2);
+    }
+
+    /* ── SKILLS BAR SECTION ────────────────────────────────────── */
+    #skills {
+      padding: var(--section-pad);
+    }
+
+    .skills-bars-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px 80px;
+      align-items: start;
+    }
+
+    .skill-bar-item { }
+    .skill-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .skill-bar-name {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .skill-bar-pct {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .skill-bar-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .skill-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -3px;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: inherit;
+      box-shadow: 0 0 10px currentColor;
+    }
+    .fill-cyan   { background: linear-gradient(90deg, rgba(0,245,255,0.4), var(--neon-cyan)); box-shadow: 0 0 12px rgba(0,245,255,0.4); }
+    .fill-green  { background: linear-gradient(90deg, rgba(0,255,136,0.4), var(--neon-green)); box-shadow: 0 0 12px rgba(0,255,136,0.4); }
+    .fill-purple { background: linear-gradient(90deg, rgba(191,95,255,0.4), var(--neon-purple)); box-shadow: 0 0 12px rgba(191,95,255,0.4); }
+    .fill-orange { background: linear-gradient(90deg, rgba(255,107,53,0.4), var(--neon-orange)); box-shadow: 0 0 12px rgba(255,107,53,0.4); }
+
+    .skills-section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── CONTACT ───────────────────────────────────────────────── */
+    #contact {
+      padding: var(--section-pad);
+      text-align: center;
+      position: relative;
+    }
+
+    .contact-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(0,245,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .contact-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 52px;
+      line-height: 1.8;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-contact {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 34px;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-decoration: none;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-contact svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .btn-email {
+      color: var(--neon-cyan);
+      border: 1.5px solid rgba(0,245,255,0.45);
+      background: rgba(0,245,255,0.04);
+    }
+    .btn-email:hover {
+      background: rgba(0,245,255,0.1);
+      box-shadow: var(--glow-cyan);
+      transform: translateY(-3px);
+    }
+    .btn-gh-contact {
+      color: var(--text-primary);
+      border: 1.5px solid rgba(180,210,220,0.25);
+      background: rgba(255,255,255,0.03);
+    }
+    .btn-gh-contact:hover {
+      border-color: rgba(180,210,220,0.6);
+      background: rgba(255,255,255,0.07);
+      transform: translateY(-3px);
+    }
+    .btn-linkedin {
+      color: var(--neon-green);
+      border: 1.5px solid rgba(0,255,136,0.35);
+      background: rgba(0,255,136,0.04);
+    }
+    .btn-linkedin:hover {
+      background: rgba(0,255,136,0.1);
+      box-shadow: var(--glow-green);
+      transform: translateY(-3px);
+    }
+
+    /* ── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      padding: 32px clamp(20px, 5vw, 60px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    footer p {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+    footer p span { color: var(--neon-cyan); }
+
+    /* ── ANIMATIONS ────────────────────────────────────────────── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glitch animation on name */
+    .glitch {
+      position: relative;
+      display: inline-block;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      opacity: 0;
+    }
+    .glitch::before {
+      color: var(--neon-green);
+      animation: glitch1 6s infinite;
+    }
+    .glitch::after {
+      color: var(--neon-purple);
+      animation: glitch2 6s infinite;
+    }
+    @keyframes glitch1 {
+      0%,90%,100% { opacity: 0; clip-path: none; transform: none; }
+      91% { opacity: 0.7; clip-path: inset(20% 0 60% 0); transform: translate(-3px, -2px); }
+      93% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 2px); }
+      95% { opacity: 0.5; clip-path: inset(10% 0 70% 0); transform: translate(-2px, 1px); }
+    }
+    @keyframes glitch2 {
+      0%,92%,100% { opacity: 0; clip-path: none; transform: none; }
+      93% { opacity: 0.6; clip-path: inset(60% 0 10% 0); transform: translate(3px, 2px); }
+      95% { clip-path: inset(30% 0 50% 0); transform: translate(-3px, -1px); }
+      97% { opacity: 0.4; clip-path: inset(80% 0 5% 0);  transform: translate(2px, -2px); }
+    }
+
+    /* Blinking cursor */
+    .cursor-blink {
+      display: inline-block;
+      width: 2px; height: 1em;
+      background: var(--neon-cyan);
+      margin-left: 3px;
+      vertical-align: text-bottom;
+      animation: blink 1.1s step-end infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-inner       { grid-template-columns: 1fr; gap: 48px; }
+      .skills-bars-wrap  { grid-template-columns: 1fr; gap: 32px; }
+      .nav-links         { display: none; }
+      .nav-toggle        { display: flex; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        background: rgba(2, 4, 8, 0.97);
+        backdrop-filter: blur(20px);
+        padding: 24px 32px;
+        gap: 24px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .about-stats      { gap: 20px; }
+      .hero-buttons     { flex-direction: column; align-items: flex-start; }
+      .skills-grid      { grid-template-columns: 1fr; }
+      .contact-buttons  { flex-direction: column; align-items: center; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">SR<span>.</span>DEV</a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about"    onclick="closeMenu()">About</a></li>
+      <li><a href="#projects" onclick="closeMenu()">Projects</a></li>
+      <li><a href="#skills"   onclick="closeMenu()">Skills</a></li>
+      <li><a href="#contact"  onclick="closeMenu()">Contact</a></li>
+    </ul>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+
+  <!-- ============================================================
+       HERO SECTION
+  ============================================================ -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Initializing portfolio sequence</p>
+
+      <h1 class="hero-name">
+        <span class="first">Shreeyansh</span><br>
+        <span class="last glitch" data-text="Rajput">Rajput</span>
+        <span class="cursor-blink"></span>
+      </h1>
+
+      <p class="hero-tagline">AI Developer&nbsp;&nbsp;|&nbsp;&nbsp;Building Future Interfaces</p>
+
+      <p class="hero-intro">
+        Crafting intelligent systems that blur the boundary between human intuition and machine
+        precision — from neural networks that read the air to voice assistants that never sleep.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#projects" class="btn btn-primary" id="viewProjectsBtn">
+          View Projects
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#contact" class="btn btn-secondary" id="contactBtn">Contact Me</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      Scroll
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       ABOUT SECTION
+  ============================================================ -->
+  <section id="about">
+    <div class="about-inner">
+
+      <!-- Left: text -->
+      <div class="about-text">
+        <p class="section-label reveal">// about.init()</p>
+        <h2 class="section-heading reveal reveal-delay-1">
+          Building at the edge of<br>
+          <span class="neon-text-cyan">intelligence.</span>
+        </h2>
+        <p class="reveal reveal-delay-2">
+          I'm a self-driven AI developer obsessed with pushing the boundaries of what machines can
+          perceive and understand. My work lives at the crossroads of computer vision, natural language,
+          and human–computer interaction.
+        </p>
+        <p class="reveal reveal-delay-3">
+          Whether it's training models that decode handwriting from mid-air gestures or engineering wake-word
+          systems that respond to a single spoken syllable — I build things that feel like the future.
+        </p>
+
+        <div class="about-stats reveal reveal-delay-4">
+          <div class="stat-item">
+            <div class="stat-num" id="countProjects">0</div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="countTech">0</div>
+            <div class="stat-label">Technologies</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="countLines">0</div>
+            <div class="stat-label">Lines Written</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: skill cards -->
+      <div class="skills-grid">
+        <div class="skill-card reveal reveal-delay-1">
+          <div class="skill-card-icon">🤖</div>
+          <div class="skill-card-name">AI / ML</div>
+          <div class="skill-card-desc">Neural networks, deep learning, model training</div>
+        </div>
+        <div class="skill-card reveal reveal-delay-2">
+          <div class="skill-card-icon">👁️</div>
+          <div class="skill-card-name">Computer Vision</div>
+          <div class="skill-card-desc">OpenCV, gesture recognition, image processing</div>
+        </div>
+        <div class="skill-card reveal reveal-delay-3">
+          <div class="skill-card-icon">🐍</div>
+          <div class="skill-card-name">Python</div>
+          <div class="skill-card-desc">NumPy, TensorFlow, PyTorch, scripting</div>
+        </div>
+        <div class="skill-card reveal reveal-delay-4">
+          <div class="skill-card-icon">🎙️</div>
+          <div class="skill-card-name">Voice AI</div>
+          <div class="skill-card-desc">Wake-word detection, NLP, speech synthesis</div>
+        </div>
+        <div class="skill-card reveal reveal-delay-3">
+          <div class="skill-card-icon">🌐</div>
+          <div class="skill-card-name">Web Dev</div>
+          <div class="skill-card-desc">HTML, CSS, JavaScript, interactive UIs</div>
+        </div>
+        <div class="skill-card reveal reveal-delay-4">
+          <div class="skill-card-icon">⚡</div>
+          <div class="skill-card-name">Automation</div>
+          <div class="skill-card-desc">Bots, pipelines, real-time processing</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       PROJECTS SECTION
+  ============================================================ -->
+  <section id="projects">
+    <div class="section-header">
+      <p class="section-label reveal">// projects.load()</p>
+      <h2 class="section-heading reveal reveal-delay-1">
+        Selected <span class="neon-text-cyan">Work</span>
+      </h2>
+    </div>
+
+    <div class="projects-grid">
+
+      <!-- Card 1: ARIA -->
+      <article class="project-card reveal reveal-delay-1" style="--card-accent: rgba(0,245,255,0.18)">
+        <div class="project-number">01 / 03</div>
+        <span class="project-tag tag-cv">Computer Vision</span>
+        <h3 class="project-title"><span class="highlight">ARIA</span> — Air Writing Recognition</h3>
+        <p class="project-desc">
+          Real-time system that tracks fingertip trajectories via webcam using MediaPipe and a
+          custom CNN to recognise characters drawn in mid-air — no physical input required.
+        </p>
+        <div class="project-tech">
+          <span class="tech-chip">Python</span>
+          <span class="tech-chip">OpenCV</span>
+          <span class="tech-chip">MediaPipe</span>
+          <span class="tech-chip">TensorFlow</span>
+          <span class="tech-chip">CNN</span>
+        </div>
+        <div class="project-footer">
+          <a href="" target="_blank" class="btn-github">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>https://github.com/elonmuskiito
+            View on GitHub
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 2: Voice AI -->
+      <article class="project-card reveal reveal-delay-2" style="--card-accent: rgba(191,95,255,0.18)">
+        <div class="project-number">02 / 03</div>
+        <span class="project-tag tag-ai">Voice AI</span>
+        <h3 class="project-title"><span class="highlight" style="color:var(--neon-purple);text-shadow:var(--glow-purple)">Friday</span> — Voice AI Assistant</h3>
+        <p class="project-desc">
+          A always-on desktop AI assistant triggered by the wake-word "Friday". Integrates NLP,
+          TTS, and a modular skill system for web search, system control, and task automation.
+        </p>
+        <div class="project-tech">
+          <span class="tech-chip">Python</span>
+          <span class="tech-chip">SpeechRecognition</span>
+          <span class="tech-chip">pyttsx3</span>
+          <span class="tech-chip">Porcupine</span>
+          <span class="tech-chip">NLP</span>
+        </div>
+        <div class="project-footer">
+          <a href="https://github.com/elonmuskiito" target="_blank" class="btn-github">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 3: EDITH -->
+      <article class="project-card reveal reveal-delay-3" style="--card-accent: rgba(0,255,136,0.16)">
+        <div class="project-number">03 / 03</div>
+        <span class="project-tag tag-hw">Hardware Concept</span>
+        <h3 class="project-title"><span class="highlight" style="color:var(--neon-green);text-shadow:var(--glow-green)">EDITH</span> — Smart Glasses Concept</h3>
+        <p class="project-desc">
+          A conceptual overlay system for AR glasses that fuses real-time object detection,
+          facial recognition, and a voice-command interface — inspired by the MCU's EDITH system.
+        </p>
+        <div class="project-tech">
+          <span class="tech-chip">Python</span>
+          <span class="tech-chip">YOLO</span>
+          <span class="tech-chip">face_recognition</span>
+          <span class="tech-chip">Raspberry Pi</span>
+          <span class="tech-chip">OpenCV</span>
+        </div>
+        <div class="project-footer">
+          <a href="https://github.com/elonmuskiito" target="_blank" class="btn-github">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SKILLS SECTION
+  ============================================================ -->
+  <section id="skills">
+    <div class="skills-section-inner">
+      <p class="section-label reveal">// skills.analyze()</p>
+      <h2 class="section-heading reveal reveal-delay-1" style="margin-bottom:56px">
+        Technical <span class="neon-text-cyan">Arsenal</span>
+      </h2>
+
+      <div class="skills-bars-wrap">
+
+        <div class="skill-bar-item reveal reveal-delay-1">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name neon-text-cyan">Python</span>
+            <span class="skill-bar-pct">92%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-cyan" data-width="92"></div>
+          </div>
+        </div>
+
+        <div class="skill-bar-item reveal reveal-delay-2">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name neon-text-green">Computer Vision</span>
+            <span class="skill-bar-pct">85%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-green" data-width="85"></div>
+          </div>
+        </div>
+
+        <div class="skill-bar-item reveal reveal-delay-3">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name neon-text-purple">AI / ML</span>
+            <span class="skill-bar-pct">80%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-purple" data-width="80"></div>
+          </div>
+        </div>
+
+        <div class="skill-bar-item reveal reveal-delay-4">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name" style="color:var(--neon-orange)">JavaScript</span>
+            <span class="skill-bar-pct">70%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-orange" data-width="70"></div>
+          </div>
+        </div>
+
+        <div class="skill-bar-item reveal reveal-delay-3">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name neon-text-cyan">Git & GitHub</span>
+            <span class="skill-bar-pct">88%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-cyan" data-width="88"></div>
+          </div>
+        </div>
+
+        <div class="skill-bar-item reveal reveal-delay-4">
+          <div class="skill-bar-header">
+            <span class="skill-bar-name neon-text-green">Voice / NLP</span>
+            <span class="skill-bar-pct">75%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill fill-green" data-width="75"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CONTACT SECTION
+  ============================================================ -->
+  <section id="contact">
+    <div class="contact-glow"></div>
+    <div class="contact-inner">
+      <p class="section-label reveal">// contact.connect()</p>
+      <h2 class="section-heading reveal reveal-delay-1" style="margin-bottom:20px">
+        Let's build something<br><span class="neon-text-cyan">remarkable.</span>
+      </h2>
+      <p class="contact-sub reveal reveal-delay-2">
+        Open to collaborations, freelance projects, and AI research opportunities.
+        Drop a message — the machines are always listening.
+      </p>
+
+      <div class="contact-buttons reveal reveal-delay-3">
+
+        <a href="mailto:shreeyanshrajput@email.com" class="btn-contact btn-email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          Send Email
+        </a>
+
+        <a href="https://github.com/elonmuskiito"_blank" class="btn-contact btn-gh-contact">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          GitHub
+        </a>
+
+        <a href="www.linkedin.com/in/shreeyansh-rajput-3a915b2b7/" target="_blank" class="btn-contact btn-linkedin">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+          LinkedIn
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <p>© 2025 <span>Shreeyansh Rajput</span>. All systems operational.</p>
+    <p style="font-size:0.62rem; color: var(--text-dim)">Built with HTML · CSS · Vanilla JS</p>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+
+    /* ── Particle Canvas ──────────────────────────────────────── */
+    (function initParticles() {
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles = [];
+      const PARTICLE_COUNT = 90;
+      const MAX_DIST = 130;
+      const CYAN = '0, 245, 255';
+      const GREEN = '0, 255, 136';
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function Particle() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.45;
+        this.vy = (Math.random() - 0.5) * 0.45;
+        this.r  = Math.random() * 1.5 + 0.4;
+        this.color = Math.random() > 0.6 ? GREEN : CYAN;
+        this.alpha = Math.random() * 0.5 + 0.15;
+      }
+
+      Particle.prototype.update = function() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > W) this.vx *= -1;
+        if (this.y < 0 || this.y > H) this.vy *= -1;
+      };
+
+      function init() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAX_DIST) {
+              const opacity = (1 - dist / MAX_DIST) * 0.18;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(${CYAN}, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+        // Draw dots
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+          ctx.fill();
+        });
+      }
+
+      function animate() {
+        particles.forEach(p => p.update());
+        draw();
+        requestAnimationFrame(animate);
+      }
+
+      resize();
+      init();
+      animate();
+      window.addEventListener('resize', () => { resize(); init(); });
+    })();
+
+
+    /* ── Navbar scroll effect ─────────────────────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+
+    /* ── Mobile nav toggle ────────────────────────────────────── */
+    const navToggle  = document.getElementById('navToggle');
+    const navLinks   = document.getElementById('navLinks');
+
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    window.closeMenu = function() {
+      navLinks.classList.remove('open');
+    };
+
+
+    /* ── Scroll reveal (IntersectionObserver) ─────────────────── */
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealEls.forEach(el => revealObserver.observe(el));
+
+
+    /* ── Skill bar animation ──────────────────────────────────── */
+    const bars = document.querySelectorAll('.skill-bar-fill');
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.width = e.target.dataset.width + '%';
+          barObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    bars.forEach(b => barObserver.observe(b));
+
+
+    /* ── Counter animation ────────────────────────────────────── */
+    function animateCounter(el, target, suffix = '') {
+      let start = 0;
+      const step = target / 60;
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= target) { start = target; clearInterval(timer); }
+        el.textContent = Math.floor(start) + suffix;
+      }, 20);
+    }
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(document.getElementById('countProjects'), 15, '+');
+          animateCounter(document.getElementById('countTech'),     12, '+');
+          animateCounter(document.getElementById('countLines'),    50, 'k+');
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    const statsEl = document.querySelector('.about-stats');
+    if (statsEl) statsObserver.observe(statsEl);
+
+
+    /* ── Button ripple effect ─────────────────────────────────── */
+    document.querySelectorAll('.btn, .btn-contact').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.className = 'ripple';
+        ripple.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${e.clientX - rect.left - size / 2}px;
+          top: ${e.clientY - rect.top - size / 2}px;
+        `;
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+      });
+    });
+
+
+    /* ── Typing cursor in hero (optional subtle loop) ─────────── */
+    // Already handled by CSS animation — no JS needed.
+
+  </script>
+
+</body>
+</html>
